@@ -2,12 +2,14 @@ import express from "express";
 import cors from "cors";
 import { productsCollection } from "./database/db.js";
 import productsRouter from "./routers/productsRouter.js";
+import authRouter from "./routers/authRouters.js";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 app.use(productsRouter);
+app.use(authRouter);
 
 app.post("/products", async (req, res) => {
   const product = req.body;
