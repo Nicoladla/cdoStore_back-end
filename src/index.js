@@ -1,13 +1,21 @@
 import express from "express";
 import cors from "cors";
-import { productsCollection } from "./database/db.js";
+import {
+  cartsCollection,
+  productsCollection,
+  usersCollection,
+} from "./database/db.js";
 import productsRouter from "./routers/productsRouter.js";
+import authRouter from "./routers/authRouters.js";
+import cartRouter from "./routers/myCartRouter.js";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 app.use(productsRouter);
+app.use(authRouter);
+app.use(cartRouter);
 
 app.post("/products", async (req, res) => {
   const product = req.body;
@@ -24,6 +32,14 @@ app.post("/products", async (req, res) => {
 
 app.delete("/products", async (req, res) => {
   await productsCollection.drop();
+});
+
+app.get("/users", async (req, res) => {
+  res.send(await usersCollection.find().toArray());
+});
+
+app.get("/carts", async (req, res) => {
+  res.send(await cartsCollection.find().toArray());
 });
 
 const port = process.env.PORT || 5000;
