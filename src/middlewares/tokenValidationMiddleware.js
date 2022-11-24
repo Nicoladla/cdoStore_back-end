@@ -4,7 +4,7 @@ import { usersCollection } from "../database/db.js";
 export async function tokenValidation(req, res, next) {
   // AINDA NÃO TA VALIDANDO PQ NAO SEI COMO CHEGA O TOKEN JWT.
   // SÓ PASSEI O ID DO USUÁRIO NO HEADERS PRA TESTAR O CARRINHO
-  const { userid: userId } = req.headers;
+  const { authorization: userId } = req.headers;
 
   try {
     const findUser = await usersCollection.findOne({ _id: ObjectID(userId) });
