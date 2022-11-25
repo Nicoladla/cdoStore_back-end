@@ -17,3 +17,20 @@ export async function signUp(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function signIn(req, res) {
+  const { password, email } = req.body;
+
+  try {
+    const userExist = await usersCollection.findOne({ email });
+    if (!userExist || !bcrypt.compareSync(password, userExist.password)) {
+      res.status(422).send({ message: "Email ou senha inválidos" });
+      return;
+    }
+
+    res.send(userExist);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+}
