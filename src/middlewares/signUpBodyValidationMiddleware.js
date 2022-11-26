@@ -2,11 +2,11 @@ import { userSchema } from "../models/userSchema.js";
 import { usersCollection } from "../database/db.js";
 
 export default async function singUpBodyValidation(req, res, next) {
-  // name, email, password
   const userInput = req.body;
-  const validation = userSchema.validate(userInput, { abortEarly: false });
-  if (validation.error) {
-    res.status(422).send(validation.error.details.map((d) => d.message));
+
+  const {error} = userSchema.validate(userInput, { abortEarly: false });
+  if (error) {
+    res.status(422).send(error.details.map((d) => d.message));
     return;
   }
 
