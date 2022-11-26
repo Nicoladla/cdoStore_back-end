@@ -13,11 +13,11 @@ export async function productExistsValidation(req, res, next) {
       res.status(404).send({ message: "Produto não encontrado" });
       return;
     }
+    req.productId = productId;
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
 
-  req.productId = productId;
   next();
 }

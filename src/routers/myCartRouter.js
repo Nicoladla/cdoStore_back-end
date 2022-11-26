@@ -19,7 +19,7 @@ router.post(
 );
 
 router.delete(
-  "/my-cart/:productId",
+  "/my-cart/:productId/",
   tokenValidation,
   productExistsValidation,
   productIsOnCartValidation,
