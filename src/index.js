@@ -9,6 +9,7 @@ import {
 import productsRouter from "./routers/productsRouter.js";
 import authRouter from "./routers/authRouters.js";
 import cartRouter from "./routers/myCartRouter.js";
+import { tokenValidation } from "./middlewares/tokenValidationMiddleware.js";
 
 const app = express();
 app.use(express.json());
@@ -42,6 +43,10 @@ app.get("/users", async (req, res) => {
 app.get("/carts", async (req, res) => {
   res.send(await cartsCollection.find().toArray());
 });
+
+
+
+app.post("/teste", tokenValidation)
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`App running on port ${port}`));

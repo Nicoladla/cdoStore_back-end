@@ -1,22 +1,30 @@
-import { ObjectID } from "bson";
+import jwt from "jsonwebtoken";
+import { ObjectId } from "mongodb";
+
 import { usersCollection } from "../database/db.js";
 
-export async function tokenValidation(req, res, next) {
-  // AINDA NÃO TA VALIDANDO PQ NAO SEI COMO CHEGA O TOKEN JWT.
-  // SÓ PASSEI O ID DO USUÁRIO NO HEADERS PRA TESTAR O CARRINHO
-  const { authorization: userId } = req.headers;
+export function tokenValidation(req, res, next) {
+  const { authorization } = req.headers;
+  const token = authorization?.replace("Bearer ", "");
 
   try {
-    const findUser = await usersCollection.findOne({ _id: ObjectID(userId) });
-    if (!findUser) {
-      res.status(404).send({ message: "Usuário não encontrado." });
-      return;
-    }
+    jwt.verify(token, process.env.SECRET_JWT, async (error, decode) => {
+      if (error) {
+        return res.status(401).send({ message: "Token inválido" });
+      }
+
+      const userExist = await usersCollection.findOne({
+        _id: ObjectId(decode.userId),
+      });
+      if (!userExist) {
+        return res.status(401).send({ message: "Token inválido" });
+      }
+
+      req.userId = decode.userId;
+      return next();
+    });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
   }
-
-  req.userId = userId;
-  next();
 }
