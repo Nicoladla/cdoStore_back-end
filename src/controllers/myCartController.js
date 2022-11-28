@@ -1,8 +1,8 @@
-import { ObjectId, ObjectID } from "bson";
-import {
-  cartsCollection,
-  productsCollection,
-} from "../database/db.js";
+
+import { ObjectId } from "mongodb";
+import { cartsCollection, productsCollection } from "../database/db.js";
+
+
 
 export async function postOnCart(req, res) {
   const userId = req.userId;
@@ -17,11 +17,11 @@ export async function postOnCart(req, res) {
       );
     } else {
       await cartsCollection.updateOne(
-        { userId: ObjectID(userId) },
+        { userId: ObjectId(userId) },
         { $push: { products: { productId, amount: 1 } } }
       );
     }
-    res.sendStatus(201);
+    return res.sendStatus(201);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
@@ -32,10 +32,19 @@ export async function deleteFromCart(req, res) {
   const userId = req.userId;
   const productId = req.productId;
   const isOnCart = req.isOnCart;
+  const { all } = req.query;
 
   if (!isOnCart) {
     res.status(404).send({ message: "Esse produto não está no carrinho." });
     return;
+  }
+
+  if (all) {
+    await cartsCollection.updateOne(
+      { userId: ObjectId(userId), "products.productId": productId },
+      { $set: { "products.$.amount": 0 } }
+    );
+    return res.sendStatus(202);
   }
 
   try {
@@ -53,22 +62,36 @@ export async function deleteFromCart(req, res) {
 
 export async function getMyCart(req, res) {
   const userId = req.userId;
+  const { name: query } = req.query;
 
   try {
     const { products: idProducts } = await cartsCollection.findOne({
-      userId: ObjectID(userId),
+      userId: ObjectId(userId),
     });
 
     let products = [];
-    for (let p in idProducts) {
+    for (let i in idProducts) {
       products.push(
         await productsCollection.findOne({
-          _id: ObjectId(idProducts[p].productId),
+          _id: ObjectId(idProducts[i].productId),
+          inStock: { $gt: 0 },
         })
       );
-      products[p].amountInCart = idProducts[p].amount;
+      products[i].amountInCart = idProducts[i].amount;
     }
-    res.send(products);
+
+    if (query) {
+      let queryProducts = [];
+      for (let p of products) {
+        if (p.name.toLowerCase().includes(query.toLowerCase())) {
+          queryProducts.push(p);
+        }
+      }
+      res.send(queryProducts);
+      return;
+    }
+
+    res.send(products.filter((p) => p.amountInCart > 0));
   } catch (err) {
     console.log(err);
     res.sendStatus(500);

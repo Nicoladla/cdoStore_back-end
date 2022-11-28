@@ -5,6 +5,7 @@ import {
   postOnCart,
 } from "../controllers/myCartController.js";
 import { productExistsValidation } from "../middlewares/productExistsValidationMiddleware.js";
+import { productHasStock } from "../middlewares/productHasStockMiddlware.js";
 import { productIsOnCartValidation } from "../middlewares/productIsOnCartValidationMiddleware.js";
 import { tokenValidation } from "../middlewares/tokenValidationMiddleware.js";
 
@@ -14,12 +15,13 @@ router.post(
   "/my-cart/:productId",
   tokenValidation,
   productExistsValidation,
+  productHasStock,
   productIsOnCartValidation,
   postOnCart
 );
 
 router.delete(
-  "/my-cart/:productId",
+  "/my-cart/:productId/",
   tokenValidation,
   productExistsValidation,
   productIsOnCartValidation,
