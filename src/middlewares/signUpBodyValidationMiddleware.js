@@ -4,10 +4,10 @@ import { usersCollection } from "../database/db.js";
 export default async function singUpBodyValidation(req, res, next) {
   const userInput = req.body;
 
-  const {error} = userSchema.validate(userInput, { abortEarly: false });
+  const { error } = userSchema.validate(userInput, { abortEarly: false });
   if (error) {
-    res.status(422).send(error.details.map((d) => d.message));
-    return;
+    const errors = error.details.map((d) => d.message);
+    return res.status(422).send({ message: errors });
   }
 
   try {
