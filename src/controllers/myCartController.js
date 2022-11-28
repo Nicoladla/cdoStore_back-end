@@ -2,7 +2,6 @@ import { ObjectId, ObjectID } from "bson";
 import {
   cartsCollection,
   productsCollection,
-  usersCollection,
 } from "../database/db.js";
 
 export async function postOnCart(req, res) {
