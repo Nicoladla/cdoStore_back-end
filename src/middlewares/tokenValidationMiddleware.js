@@ -10,6 +10,7 @@ export function tokenValidation(req, res, next) {
   try {
     jwt.verify(token, process.env.SECRET_JWT, async (error, decode) => {
       if (error) {
+        console.log(error);
         return res.status(401).send({ message: "Token inválido" });
       }
 

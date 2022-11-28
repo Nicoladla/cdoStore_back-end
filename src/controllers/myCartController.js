@@ -57,7 +57,6 @@ export async function deleteFromCart(req, res) {
   }
 }
 
-// eu criei um monstro, o mais puro suco  da gambiarra. Mas funciona
 export async function getMyCart(req, res) {
   const userId = req.userId;
   const { name: query } = req.query;
